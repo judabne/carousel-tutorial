@@ -1,0 +1,67 @@
+.DisplayFrame {
+    touch-action: none;
+    border-radius: 10px;
+    width: 95vw;
+    height: calc(95vw * 0.5625);
+    max-height: 90vh;
+    max-width: calc(90vh * 1.78);
+    margin: auto;
+    text-align: center;
+    background-color: #eaebec;
+    overflow-y: hidden;
+    overflow-x: auto;
+    white-space: nowrap;
+    z-index: 1;
+    caret-color: transparent;
+}
+
+.DisplayFrame::-webkit-scrollbar {
+    display: none;
+}
+
+.LeftArrow {
+    position: absolute;
+    left: 1%;
+    padding-left: 2px;
+    padding-right: 2px;
+    font-size: xx-large;
+    color: #aabbcc;
+    user-select: none;
+    z-index: 2;
+}
+
+.LeftArrow:hover {
+    color: #bbccdd;
+}
+
+.LeftArrow:active {
+    color: #206ebd;
+}
+
+.RightArrow {
+    position: absolute;
+    right: 1%;
+    padding-left: 2px;
+    padding-right: 2px;
+    font-size: xx-large;
+    color: #aabbcc;
+    user-select: none;
+    z-index: 2;
+}
+
+.RightArrow:hover {
+    color: #bbccdd
+}
+
+.RightArrow:active {
+    color: #206ebd
+}
+
+.Container {
+    position: relative;
+    display: flex;
+    vertical-align: middle;
+    overflow: hidden;
+    width: 100%;
+    align-items: center;
+}
