@@ -1,4 +1,4 @@
-import React, {Children, useState} from 'react';
+import React, { Children, useEffect, useState } from 'react';
 import classes from './Carousel.module.css'
 
 const widthSpan = 100.1
@@ -29,6 +29,12 @@ function Carousel(props) {
         setSliderPosition(newPosition);
     }
 
+    const jumpToSlideHandler = (id) => {
+        let toTranslate = id;
+        translateFullSlides(toTranslate);
+        setSliderPosition(id)
+    }
+
     const prevClickHandler = () => {
         prevSlideHandler();
     }
@@ -37,17 +43,50 @@ function Carousel(props) {
         nextSlideHandler();
     }
 
+    const keyPressHandler = (event) => {
+        if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            event.stopPropagation();
+            prevSlideHandler();
+            return;
+        }
+        if (event.key === "ArrowRight") {
+            event.preventDefault();
+            event.stopPropagation();
+            nextSlideHandler();
+            return;
+        }
+        if (49 <= event.keyCode && event.keyCode <= 57) {
+            const arrayPos = event.keyCode - 49;
+            if (arrayPos < children.length) {
+                jumpToSlideHandler(arrayPos);
+            }
+            return;
+        }
+        if (event.keyCode === 48) {
+            if (children.length >= 10)
+                jumpToSlideHandler(9);
+        }
+    }
+
     const translateFullSlides = (newPosition) => {
         let toTranslate = -widthSpan * newPosition;
         for (var i = 0; i < children.length; i++) {
             let elem = document.getElementById(`carouselitem` + i);
-            elem.style.transform = `translateX(` + toTranslate +`%)`; 
+            elem.style.transform = `translateX(` + toTranslate + `%)`;
         }
     }
 
-    const displayItems = Children.map(children, (child, index) =>(
+    const displayItems = Children.map(children, (child, index) => (
         <div className={classes.CarouselItem} id={`carouselitem` + index}>{child}</div>
-    ))
+    ));
+
+    useEffect(() => {
+        window.addEventListener('keydown', keyPressHandler);
+        return () => {
+            window.removeEventListener('keydown', keyPressHandler)
+        }
+    })
 
     return (
         <div>
