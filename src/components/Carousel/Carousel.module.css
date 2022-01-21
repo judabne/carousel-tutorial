@@ -65,3 +65,17 @@
     width: 100%;
     align-items: center;
 }
+
+.CarouselItem {
+    touch-action: none;
+    height: 100%;
+    width: 100%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.CarouselItem img {
+    height: 100%;
+    max-width: 100%;
+    background-color: none;
+}
