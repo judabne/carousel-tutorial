@@ -5,12 +5,14 @@ const widthSpan = 100.1
 
 function Carousel(props) {
     const [sliderPosition, setSliderPosition] = useState(0);
-    const { children } = props;
+    const { children, infinite } = props;
 
     const prevSlideHandler = () => {
         let newPosition = sliderPosition;
         if (newPosition > 0) {
             newPosition = newPosition - 1;
+        } else if (infinite) {
+            newPosition = children.length - 1;
         }
         translateFullSlides(newPosition);
         setSliderPosition(newPosition);
@@ -20,6 +22,8 @@ function Carousel(props) {
         let newPosition = sliderPosition;
         if (newPosition < children.length - 1) {
             newPosition = newPosition + 1;
+        } else if (infinite) {
+            newPosition = 0;
         }
         translateFullSlides(newPosition);
         setSliderPosition(newPosition);
