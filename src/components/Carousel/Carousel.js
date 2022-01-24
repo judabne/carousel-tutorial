@@ -9,6 +9,10 @@ function Carousel(props) {
     const [touchEndPosition, setTouchEndPosition] = useState(0);
     const [touched, setTouched] = useState(false);
     const [swiped, setSwiped] = useState(false);
+    const [mouseStartPosition, setMouseStartPosition] = useState(0);
+    const [mouseEndPosition, setMouseEndPosition] = useState(0);
+    const [mouseClicked, setMouseClicked] = useState(false);
+    const [mouseSwiped, setMouseSwiped] = useState(false);
 
     const { children, infinite } = props;
 
@@ -119,6 +123,44 @@ function Carousel(props) {
         setSwiped(false);
     }
 
+    const mouseStartHandler = (e) => {
+        e.preventDefault();
+        speedUpAnimation();
+        setMouseStartPosition(e.clientX);
+        setMouseEndPosition(e.clientX);
+        setMouseClicked(true);
+    }
+
+    const mouseMoveHandler = (e) => {
+        e.preventDefault();
+        var frameWidth = document.getElementById('DisplayFrame').offsetWidth;
+        if (mouseClicked === true) {
+            setMouseEndPosition(e.clientX);
+            let translateDist = (mouseEndPosition - mouseStartPosition) / frameWidth * 100;
+            translatePartialSlides(translateDist);
+            setMouseSwiped(true);
+        }
+    }
+
+    const mouseEndHandler = (e) => {
+        slowDownAnimation();
+        if (mouseSwiped === true) {
+            if (mouseStartPosition - mouseEndPosition > 100) {
+                nextSlideHandler();
+            } else if (mouseStartPosition - mouseEndPosition < -100) {
+                prevSlideHandler();
+            } else {
+                jumpToSlideHandler(sliderPosition);
+            }
+        }
+        setMouseClicked(false);
+        setMouseSwiped(false);
+    }
+
+    const wheelHandler = () => {
+        document.getElementById("DisplayFrame").scrollLeft = 0;
+    }
+
     const translatePartialSlides = (toTranslate) => {
         let currentTranslation = -sliderPosition * widthSpan;
         let totalTranslation = currentTranslation + toTranslate;
@@ -166,7 +208,13 @@ function Carousel(props) {
                     id="DisplayFrame"
                     onTouchStart={(e) => touchStartHandler(e)}
                     onTouchMove={(e) => touchMoveHandler(e)}
-                    onTouchEnd={(e) => touchEndHandler(e)}>
+                    onTouchEnd={(e) => touchEndHandler(e)}
+                    onMouseDown={(e) => mouseStartHandler(e)}
+                    onMouseMove={(e) => mouseMoveHandler(e)}
+                    onMouseUp={(e) => mouseEndHandler(e)}
+                    onMouseLeave={(e) => mouseEndHandler(e)}
+                    onWheel={()=> wheelHandler()}
+                    >
                     {displayItems}
                 </div>
                 <div className={classes.RightArrow} onClick={nextClickHandler}>❱</div>
