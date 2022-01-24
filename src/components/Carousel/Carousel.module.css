@@ -81,3 +81,41 @@
     max-width: 100%;
     background-color: none;
 }
+
+.Navigation {
+    width: 90%;
+    max-width: calc(90vh * 1.78);
+    justify-content: center;
+    display: flex;
+    margin: .5% auto;
+    user-select: none;
+}
+
+.PositionIndicator {
+    box-sizing: border-box;
+    width: 2vw;
+    height: 2vw;
+    border: 1px solid #aabbcc;
+    border-radius: 50%;
+    margin: 2px;
+}
+
+.PositionIndicator:hover{
+    background: #ccddee;
+}
+
+.PositionIndicator:active{
+    background-color: #206ebd;
+}
+
+.CurrentPosition {
+    border: 1px solid #778899;
+    background: #aabbcc;
+}
+
+@media (max-width: 600px) {
+    .PositionIndicator{
+        width: 2vh;
+        height: 2vh;
+    }
+}
