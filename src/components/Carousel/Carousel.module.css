@@ -73,7 +73,11 @@
     display: inline-block;
     vertical-align: top;
     margin-right: .1%;
-    transition: all 500ms linear;
+    transition: all 500ms ease-out;
+}
+
+.FastAnimation{
+    transition: all 50ms linear;
 }
 
 .CarouselItem img {

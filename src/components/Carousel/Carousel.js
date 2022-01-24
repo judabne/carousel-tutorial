@@ -5,6 +5,11 @@ const widthSpan = 100.1
 
 function Carousel(props) {
     const [sliderPosition, setSliderPosition] = useState(0);
+    const [touchStartPosition, setTouchStartPosition] = useState(0);
+    const [touchEndPosition, setTouchEndPosition] = useState(0);
+    const [touched, setTouched] = useState(false);
+    const [swiped, setSwiped] = useState(false);
+
     const { children, infinite } = props;
 
     const prevSlideHandler = () => {
@@ -68,6 +73,61 @@ function Carousel(props) {
         }
     }
 
+    const speedUpAnimation = () => {
+        for (let i = Math.max(0, sliderPosition - 2); i < Math.min(children.length, sliderPosition + 3); i++) {
+            let elem = document.getElementById(`carouselitem` + i);
+            elem.classList.add(classes.FastAnimation);
+        }
+    }
+
+    const slowDownAnimation = () => {
+        for (let i = Math.max(0, sliderPosition - 2); i < Math.min(children.length, sliderPosition + 3); i++) {
+            let elem = document.getElementById(`carouselitem` + i);
+            elem.classList.remove(classes.FastAnimation);
+        }
+    }
+
+    const touchStartHandler = (e) => {
+        speedUpAnimation();
+        setTouchStartPosition(e.targetTouches[0].clientX);
+        setTouchEndPosition(e.targetTouches[0].clientX);
+        setTouched(true);
+    }
+
+    const touchMoveHandler = (e) => {
+        setTouchEndPosition(e.targetTouches[0].clientX);
+        const frameWidth = document.getElementById('DisplayFrame').offsetWidth;
+        const translateDist = (touchEndPosition - touchStartPosition) / frameWidth *100;
+        translatePartialSlides(translateDist);
+        if (touched === true) {
+            setSwiped(true);
+        }
+    }
+
+    const touchEndHandler = (e) => {
+        if (swiped) {
+            slowDownAnimation();
+            if (touchStartPosition - touchEndPosition > 75) {
+                nextSlideHandler();
+            } else if (touchStartPosition - touchEndPosition < -75) {
+                prevSlideHandler();
+            } else {
+                jumpToSlideHandler(sliderPosition);
+            }
+        }
+        setTouched(false);
+        setSwiped(false);
+    }
+
+    const translatePartialSlides = (toTranslate) => {
+        let currentTranslation = -sliderPosition * widthSpan;
+        let totalTranslation = currentTranslation + toTranslate;
+        for (var i = 0; i < children.length; i++) {
+            let elem = document.getElementById(`carouselitem` + i);
+            elem.style.transform = `translateX(` + totalTranslation + `%)`
+        }
+    }
+
     const translateFullSlides = (newPosition) => {
         let toTranslate = -widthSpan * newPosition;
         for (var i = 0; i < children.length; i++) {
@@ -101,7 +161,12 @@ function Carousel(props) {
         <div>
             <div className={classes.Container}>
                 <div className={classes.LeftArrow} onClick={prevClickHandler}>❰</div>
-                <div className={classes.DisplayFrame}>
+                <div 
+                    className={classes.DisplayFrame}
+                    id="DisplayFrame"
+                    onTouchStart={(e) => touchStartHandler(e)}
+                    onTouchMove={(e) => touchMoveHandler(e)}
+                    onTouchEnd={(e) => touchEndHandler(e)}>
                     {displayItems}
                 </div>
                 <div className={classes.RightArrow} onClick={nextClickHandler}>❱</div>
