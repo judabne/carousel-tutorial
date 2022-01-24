@@ -9,15 +9,15 @@
     text-align: center;
     background-color: #eaebec;
     overflow-y: hidden;
-    overflow-x: auto;
+    overflow-x: hidden;
     white-space: nowrap;
     z-index: 1;
     caret-color: transparent;
 }
-
+ 
 .DisplayFrame::-webkit-scrollbar {
     display: none;
-}
+} 
 
 .LeftArrow {
     position: absolute;

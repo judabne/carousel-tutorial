@@ -30,8 +30,7 @@ function Carousel(props) {
     }
 
     const jumpToSlideHandler = (id) => {
-        let toTranslate = id;
-        translateFullSlides(toTranslate);
+        translateFullSlides(id);
         setSliderPosition(id)
     }
 
