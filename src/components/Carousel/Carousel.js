@@ -13,15 +13,17 @@ function Carousel(props) {
     const [mouseEndPosition, setMouseEndPosition] = useState(0);
     const [mouseClicked, setMouseClicked] = useState(false);
     const [mouseSwiped, setMouseSwiped] = useState(false);
-
-    const { children, infinite } = props;
+    
+    const { children, infinite, timer, stopOnManual } = props;
+    const [autoAdvance, setAutoAdvance] = useState(timer !== undefined);
+    let interval;
 
     const prevSlideHandler = () => {
         let newPosition = sliderPosition;
         if (newPosition > 0) {
             newPosition = newPosition - 1;
         } else if (infinite) {
-            newPosition = children.length - 1;
+            newPosition = children.length - 1 || 0;
         }
         translateFullSlides(newPosition);
         setSliderPosition(newPosition);
@@ -43,15 +45,25 @@ function Carousel(props) {
         setSliderPosition(id)
     }
 
+    const manageTimer = () => {
+        clearInterval(interval);
+        if (stopOnManual) {
+            setAutoAdvance(false);
+        }
+    }
+
     const prevClickHandler = () => {
+        manageTimer();
         prevSlideHandler();
     }
 
     const nextClickHandler = () => {
+        manageTimer();
         nextSlideHandler();
     }
 
     const keyPressHandler = (event) => {
+        manageTimer();
         if (event.key === "ArrowLeft") {
             event.preventDefault();
             event.stopPropagation();
@@ -78,20 +90,21 @@ function Carousel(props) {
     }
 
     const speedUpAnimation = () => {
-        for (let i = Math.max(0, sliderPosition - 2); i < Math.min(children.length, sliderPosition + 3); i++) {
+        for (let i = Math.max(0, sliderPosition - 2); i < (Math.min(children.length, sliderPosition + 3) || 1); i++) {
             let elem = document.getElementById(`carouselitem` + i);
             elem.classList.add(classes.FastAnimation);
         }
     }
 
     const slowDownAnimation = () => {
-        for (let i = Math.max(0, sliderPosition - 2); i < Math.min(children.length, sliderPosition + 3); i++) {
+        for (let i = Math.max(0, sliderPosition - 2); i < (Math.min(children.length, sliderPosition + 3) || 1); i++) {
             let elem = document.getElementById(`carouselitem` + i);
             elem.classList.remove(classes.FastAnimation);
         }
     }
 
     const touchStartHandler = (e) => {
+        manageTimer();
         speedUpAnimation();
         setTouchStartPosition(e.targetTouches[0].clientX);
         setTouchEndPosition(e.targetTouches[0].clientX);
@@ -124,6 +137,7 @@ function Carousel(props) {
     }
 
     const mouseStartHandler = (e) => {
+        manageTimer();
         e.preventDefault();
         speedUpAnimation();
         setMouseStartPosition(e.clientX);
@@ -164,7 +178,7 @@ function Carousel(props) {
     const translatePartialSlides = (toTranslate) => {
         let currentTranslation = -sliderPosition * widthSpan;
         let totalTranslation = currentTranslation + toTranslate;
-        for (var i = 0; i < children.length; i++) {
+        for (var i = 0; i < (children.length || 1); i++) {
             let elem = document.getElementById(`carouselitem` + i);
             elem.style.transform = `translateX(` + totalTranslation + `%)`
         }
@@ -172,7 +186,7 @@ function Carousel(props) {
 
     const translateFullSlides = (newPosition) => {
         let toTranslate = -widthSpan * newPosition;
-        for (var i = 0; i < children.length; i++) {
+        for (var i = 0; i < (children.length || 1); i++) {
             let elem = document.getElementById(`carouselitem` + i);
             elem.style.transform = `translateX(` + toTranslate + `%)`;
         }
@@ -194,8 +208,14 @@ function Carousel(props) {
 
     useEffect(() => {
         window.addEventListener('keydown', keyPressHandler);
+        if (autoAdvance && !mouseClicked && !touched) {
+            interval = setInterval(() => {
+                nextSlideHandler();
+            }, timer)
+        }
         return () => {
-            window.removeEventListener('keydown', keyPressHandler)
+            window.removeEventListener('keydown', keyPressHandler);
+            clearInterval(interval);
         }
     });
 
